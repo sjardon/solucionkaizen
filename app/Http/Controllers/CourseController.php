@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\Course\CourseCategory;
+use App\Models\Course\CourseStatus;
+use App\Models\Image;
+use App\Models\Video;
+
 class CourseController extends Controller
 {
 
@@ -45,47 +50,49 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-      var_dump($request->all());
-      // if(!$request->user()->hasAnyRole(['admin','editor','docente'])){
-      //   return response('Unauthorized',401);
-      // }
-      //
-      // $validator = Validator::make($request->all(), [
-      //   'name' => 'required|unique:courses|max:255',
-      //   'category.id' => 'required|exists:course_categories,id',
-      //   'status.id' => 'required|exists:course_status,id',
-      //   'shortDescription' => 'required|max:255',
-      //   'description' => 'required|max:5000',
-      //   'price' => 'required',
-      //   'thumbnailImage.id' => 'required|exists:images,id',
-      //   'coverImage.id' => 'required|exists:images,id',
-      //   'presentationVideo.id' => 'required|exists:videos,id'
-      //   ])->validate();
-      //
-      //
-      //   $course = Course::create([
-      //     'name' => $request->name,
-      //     'category' => $request->category->id,
-      //     'status' => $request->status->id,
-      //     'shortDescription' => $request->shortDescription,
-      //     'description' => $request->description,
-      //     'price' => $request->price,
-      //     'thumbnailImage' => $request->thumbnailImage->id,
-      //     'coverImage' => $request->coverImage->id,
-      //     'presentationVideo' => $request->presentationVideo->id
-      //   ]);
-      //
-      //   if(!$course){
-      //     return response('Error de creación',500);
-      //   }
-      //
-      //   $course->category;
-      //   $course->status;
-      //   $course->thumbnailImage;
-      //   $course->coverImage;
-      //   $course->presentationVideo;
-      //
-      //   return response(["course"=>$course]);
+
+      if(!$request->user()->hasAnyRole(['admin','editor','docente'])){
+        return response('Unauthorized',401);
+      }
+
+      $validator = Validator::make($request->all(), [
+        'name' => 'required|unique:courses|max:255',
+        'category.id' => 'required|exists:course_categories,id',
+        'status.id' => 'required|exists:course_statuses,id',
+        'shortDescription' => 'required|max:255',
+        'description' => 'required|max:5000',
+        'price' => 'required',
+        'thumbnailImage.id' => 'required|exists:images,id',
+        'coverImage.id' => 'required|exists:images,id',
+        'presentationVideo.id' => 'required|exists:videos,id'
+        ])->validate();
+
+        $course = new Course([
+          'name' => $request->input('name'),
+          'short_description' => $request->shortDescription,
+          'description' => $request->description,
+          'price' => $request->price,
+        ]);
+
+        $cc = CourseCategory::find($request->input('category.id'));
+        $cs = CourseStatus::find($request->input('status.id'));
+        $ti = Image::find($request->input('thumbnailImage.id'));
+        $ci = Image::find($request->input('coverImage.id'));
+        $pv = Video::find($request->input('presentationVideo.id'));
+
+        $course->category()->associate($cc);
+        $course->status()->associate($cs);
+        $course->thumbnailImage()->associate($ti);
+        $course->coverImage()->associate($ci);
+        $course->presentationVideo()->associate($pv);
+
+        $course->save();
+
+        if(!$course){
+          return response('Error de creación',500);
+        }
+
+        return response(["course"=>$course]);
     }
 
     /**
@@ -134,17 +141,22 @@ class CourseController extends Controller
         'presentationVideo.id' => 'required|exists:videos,id'
         ])->validate();
 
-        $course = new Course([
-          'name' => $request->name,
-          'category' => $request->category->id,
-          'status' => $request->status->id,
-          'shortDescription' => $request->shortDescription,
-          'description' => $request->description,
-          'price' => $request->price,
-          'thumbnailImage' => $request->thumbnailImage->id,
-          'coverImage' => $request->coverImage->id,
-          'presentationVideo' => $request->presentationVideo->id
-        ]);
+        $course->name = $request->input('name');
+        $course->short_description = $request->input('shortDescription');
+        $course->description = $request->input('description');
+        $course->price = $request->input('price');
+
+        $cc = CourseCategory::find($request->input('category.id'));
+        $cs = CourseStatus::find($request->input('status.id'));
+        $ti = Image::find($request->input('thumbnailImage.id'));
+        $ci = Image::find($request->input('coverImage.id'));
+        $pv = Video::find($request->input('presentationVideo.id'));
+
+        $course->category()->associate($cc);
+        $course->status()->associate($cs);
+        $course->thumbnailImage()->associate($ti);
+        $course->coverImage()->associate($ci);
+        $course->presentationVideo()->associate($pv);
 
         $course->save();
 
@@ -152,11 +164,6 @@ class CourseController extends Controller
           return response('Error de creación',500);
         }
 
-        $course->category;
-        $course->status;
-        $course->thumbnailImage;
-        $course->coverImage;
-        $course->presentationVideo;
 
         return response(["course"=>$course]);
     }

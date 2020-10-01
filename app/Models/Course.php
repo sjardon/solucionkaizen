@@ -12,15 +12,27 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
 
+  protected $fillable = [
+    'name',
+    'category',
+    'status',
+    'short_description',
+    'description',
+    'price',
+    'thumbnail_image',
+    'cover_image',
+    'presentation_video'
+  ];
+
   // Falta agregar el docente a cargo del curso, pero:
   // ¿El curso puede estar organizado por más de un docente?
 
   public function category(){
-    return $this->belongsTo(CourseCategory::class);
+    return $this->belongsTo(CourseCategory::class,'course_category_id');
   }
 
   public function status(){
-    return $this->belongsTo(CourseStatus::class);
+    return $this->belongsTo(CourseStatus::class,'course_status_id');
   }
 
   public function thumbnailImage(){
