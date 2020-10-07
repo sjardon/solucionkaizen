@@ -16,12 +16,12 @@ class CreateStudentsTable extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
 
-            // Mail (está en el usuario), nombre, apellido, foto de perfil, curriculum, sitio web, mini biografía.
+            // Mail (está en el usuario), nombre, apellido, foto de perfil.
             $table->string("name");
             $table->string("surname");
 
             $table->unsignedBigInteger('user_id');
-            
+
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

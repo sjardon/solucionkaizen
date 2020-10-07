@@ -69,9 +69,9 @@ class CourseController extends Controller
 
         $course = new Course([
           'name' => $request->input('name'),
-          'short_description' => $request->shortDescription,
-          'description' => $request->description,
-          'price' => $request->price,
+          'short_description' => $request->input('shortDescription'),
+          'description' => $request->input('description'),
+          'price' => $request->input('price'),
         ]);
 
         $cc = CourseCategory::find($request->input('category.id'));
@@ -171,10 +171,11 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Course $course)
+    public function destroy(Request $request,Course $course)
     {
 
       if(!$request->user()->hasAnyRole(['admin','editor'])){
