@@ -12,6 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
 
+  protected $hidden = [
+    'course_category_id',
+    'course_status_id',
+    'thumbnail_image_id',
+    'cover_image_id',
+    'presentation_video_id'
+  ];
+
   protected $fillable = [
     'name',
     'category',

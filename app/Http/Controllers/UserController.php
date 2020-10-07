@@ -91,7 +91,7 @@ class UserController extends Controller
     */
     public function show(User $user)
     {
-      // Devuelve un usuario
+      
       $user->person->get();
       $user->roles;
       return response(["user"=>$user]);

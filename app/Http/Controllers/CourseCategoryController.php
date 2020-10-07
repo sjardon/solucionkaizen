@@ -62,24 +62,30 @@ class CourseCategoryController extends Controller
         'coverImage.id' => 'required|exists:images,id',
         ])->validate();
 
-        $courseCategory = CourseCategory::create([
+
+        $courseCategory = CourseCategory([
           'name' => $request->name,
-          'parent' => $request->parent->id,
-          'status' => $request->status->id,
           'shortDescription' => $request->shortDescription,
           'description' => $request->description,
-          'thumbnailImage' => $request->thumbnailImage->id,
-          'coverImage' => $request->coverImage->id
         ]);
+
+        $parent = CourseCategory::find($request->input('parent.id'));
+        $status = CourseCategoryStatus::find($request->input('status.id'));
+        $thumbnailImage = Image::find($request->input('thumbnailImage.id'));
+        $coverImage = Image::find($request->input('coverImage.id'));
+
+
+        $courseCategory->parent()->associate($parent);
+        $courseCategory->status()->associate($status);
+        $courseCategory->thumbnailImage()->associate($thumbnailImage);
+        $courseCategory->coverImage()->associate($coverImage);
+
+        $courseCategory->save();
 
         if(!$courseCategory){
           return response('Error de creación',500);
         }
 
-        $courseCategory->parent;
-        $courseCategory->status;
-        $courseCategory->thumbnailImage;
-        $courseCategory->coverImage;
 
         return response(["courseCategory"=>$courseCategory]);
     }
@@ -123,19 +129,25 @@ class CourseCategoryController extends Controller
         'thumbnailImage.id' => 'required|exists:images,id',
         'coverImage.id' => 'required|exists:images,id',
         ])->validate();
-
-        $courseCategory = new CourseCategory([
+        
+        $courseCategory = CourseCategory([
           'name' => $request->name,
-          'parent' => $request->parent->id,
-          'status' => $request->status->id,
           'shortDescription' => $request->shortDescription,
           'description' => $request->description,
-          'thumbnailImage' => $request->thumbnailImage->id,
-          'coverImage' => $request->coverImage->id
         ]);
 
-        $course->save();
+        $parent = CourseCategory::find($request->input('parent.id'));
+        $status = CourseCategoryStatus::find($request->input('status.id'));
+        $thumbnailImage = Image::find($request->input('thumbnailImage.id'));
+        $coverImage = Image::find($request->input('coverImage.id'));
 
+
+        $courseCategory->parent()->associate($parent);
+        $courseCategory->status()->associate($status);
+        $courseCategory->thumbnailImage()->associate($thumbnailImage);
+        $courseCategory->coverImage()->associate($coverImage);
+
+        $courseCategory->save();
         if(!$course){
           return response('Error de creación',500);
         }
