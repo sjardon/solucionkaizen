@@ -111,10 +111,9 @@ class StudentController extends Controller
           }
         }
 
-        $student = new Student([
-          'name' => $request->input('name'),
-          'surname' => $request->input('surname')
-        ]);
+
+        $student->name = $request->input('name');
+        $student->surname = $request->input('surname');
 
         $i = Image::find($request->input('image.id'));
         $u = User::find($request->input('user.id'));
