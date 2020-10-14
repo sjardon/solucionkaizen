@@ -18,7 +18,7 @@ class CourseCategoryStatusController extends Controller
 
       $courseCategoryStatuses = CourseCategoryStatus::all();
 
-      return response(['courseCategoryStatuses'=>$courseCategoryStatuses]);
+      return response(['course_category_statuses'=>$courseCategoryStatuses]);
     }
 
     /**
@@ -54,7 +54,7 @@ class CourseCategoryStatusController extends Controller
           return response('Error de creación',500);
         }
 
-        return response(["courseCategoryStatus"=>$courseCategoryStatus]);
+        return response(["course_category_status"=>$courseCategoryStatus]);
     }
 
     /**
@@ -65,7 +65,7 @@ class CourseCategoryStatusController extends Controller
      */
     public function show(CourseCategoryStatus $courseCategoryStatus)
     {
-      return response(["courseCategoryStatus"=>$courseCategoryStatus]);
+      return response(["course_category_status"=>$courseCategoryStatus]);
     }
 
     /**
@@ -109,7 +109,7 @@ class CourseCategoryStatusController extends Controller
           return response('Error de creación',500);
         }
 
-        return response(["courseCategoryStatus"=>$courseCategoryStatus]);
+        return response(["course_category_status"=>$courseCategoryStatus]);
     }
 
     /**

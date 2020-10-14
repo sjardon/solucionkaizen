@@ -6,6 +6,7 @@ use App\Models\Course\CourseCategory;
 use App\Models\Course\CourseStatus;
 use App\Models\Image;
 use App\Models\Video;
+use App\Models\Person\Teacher;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,8 +33,11 @@ class Course extends Model
     'presentation_video'
   ];
 
-  // Falta agregar el docente a cargo del curso, pero:
-  // ¿El curso puede estar organizado por más de un docente?
+
+
+  public function teachers(){
+    return $this->belongsToMany(Teacher::class)->withTimestamps()->as('assign');
+  }
 
   public function category(){
     return $this->belongsTo(CourseCategory::class,'course_category_id');

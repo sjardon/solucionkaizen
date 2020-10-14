@@ -26,18 +26,14 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::all();
 
-        $courses->map(function($course){
-
-          $course->category;
-          $course->status;
-          $course->thumbnailImage;
-          $course->coverImage;
-          $course->presentationVideo;
-
-          return $course;
-        });
+        $courses = Course::with('teachers')
+        ->with('category')
+        ->with('status')
+        ->with('thumbnailImage')
+        ->with('coverImage')
+        ->with('presentationVideo')
+        ->get();
 
         return response(['courses'=>$courses]);
     }

@@ -21,14 +21,9 @@ class StudentController extends Controller
   public function index()
   {
 
-    $students = Student::all();
-
-    $students->map(function($students){
-      $student->user();
-      $student->image();
-
-      return $student;
-    });
+    $students = Student::with('user')
+    ->with('image')
+    ->get();
 
     return response(['students'=>$students]);
   }

@@ -19,7 +19,7 @@ class CourseStatusController extends Controller
 
       $courseStatuses = CourseStatus::all();
 
-      return response(['courseStatuses'=>$courseStatuses]);
+      return response(['course_statuses'=>$courseStatuses]);
     }
 
     /**
@@ -55,7 +55,7 @@ class CourseStatusController extends Controller
           return response('Error de creación',500);
         }
 
-        return response(["courseStatus"=>$courseStatus]);
+        return response(["course_status"=>$courseStatus]);
 
     }
 
@@ -67,7 +67,7 @@ class CourseStatusController extends Controller
      */
     public function show(CourseStatus $courseStatus)
     {
-      return response(["courseStatus"=>$courseStatus]);
+      return response(["course_status"=>$courseStatus]);
     }
 
     /**
@@ -110,7 +110,7 @@ class CourseStatusController extends Controller
           return response('Error de creación',500);
         }
 
-        return response(["courseStatus"=>$courseStatus]);
+        return response(["course_status"=>$courseStatus]);
     }
 
     /**

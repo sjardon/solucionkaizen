@@ -15,14 +15,10 @@ class TeacherController extends Controller
     public function index()
     {
 
-      $teachers = Teacher::all();
+      $teachers = Teacher::with('user')
+      ->with('image')
+      ->get();
 
-      $teachers->map(function($teacher){
-        $teacher->user();
-        $teacher->image();
-
-        return $teacher;
-      });
 
       return response(['teachers'=>$teachers]);
     }
@@ -81,8 +77,8 @@ class TeacherController extends Controller
      */
     public function show(Teacher $teacher)
     {
-      $teacher->user();
-      $teacher->image();
+      $teacher->user;
+      $teacher->image;
 
       return response(['teacher'=>$teacher]);
     }

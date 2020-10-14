@@ -24,19 +24,14 @@ class CourseCategoryController extends Controller
     public function index()
     {
 
-      $courseCategories = CourseCategory::all();
+      $courseCategories = CourseCategory::with('parent')
+      ->with('status')
+      ->with('thumbnailImage')
+      ->with('coverImage')
+      ->get();
 
-      $courseCategories->map(function($courseCategory){
 
-        $courseCategory->parent;
-        $courseCategory->status;
-        $courseCategory->thumbnailImage;
-        $courseCategory->coverImage;
-
-        return $courseCategory;
-      });
-
-      return response(['courseCategories'=>$courseCategories]);
+      return response(['course_categories'=>$courseCategories]);
     }
 
     /**
@@ -87,7 +82,7 @@ class CourseCategoryController extends Controller
         }
 
 
-        return response(["courseCategory"=>$courseCategory]);
+        return response(["course_category"=>$courseCategory]);
     }
 
     /**
@@ -104,7 +99,7 @@ class CourseCategoryController extends Controller
       $courseCategory->thumbnailImage;
       $courseCategory->coverImage;
 
-      return response(["courseCategory"=>$courseCategory]);
+      return response(["course_category"=>$courseCategory]);
     }
 
     /**
@@ -129,7 +124,7 @@ class CourseCategoryController extends Controller
         'thumbnailImage.id' => 'required|exists:images,id',
         'coverImage.id' => 'required|exists:images,id',
         ])->validate();
-        
+
         $courseCategory = CourseCategory([
           'name' => $request->name,
           'shortDescription' => $request->shortDescription,
@@ -152,13 +147,8 @@ class CourseCategoryController extends Controller
           return response('Error de creación',500);
         }
 
-        $course->category;
-        $course->status;
-        $course->thumbnailImage;
-        $course->coverImage;
-        $course->presentationVideo;
 
-        return response(["course"=>$course]);
+        return response(["course_category"=>$courseCategory]);
     }
 
     /**

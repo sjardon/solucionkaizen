@@ -27,16 +27,12 @@ class UserController extends Controller
   public function index(Request $request)
   {
     //Listado de usuarios. Se pueden agregar filtros.
-    $users = User::all();
 
-    $users->map(function($user){
+    $users = User::with('roles')
+    ->with('person')
+    ->get();
 
-      $user->roles;
-      $user->person;
 
-      return $user;
-
-    });
 
     return response(['users'=>$users]);
   }
@@ -91,7 +87,7 @@ class UserController extends Controller
     */
     public function show(User $user)
     {
-      
+
       $user->person->get();
       $user->roles;
       return response(["user"=>$user]);
