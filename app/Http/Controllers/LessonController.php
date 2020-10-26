@@ -34,7 +34,6 @@ class LessonController extends Controller
   */
   public function store(Request $request)
   {
-    
 
     if(!$request->user()->hasAnyRole(['admin','editor','docente'])){
       return response('Unauthorized',401);

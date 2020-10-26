@@ -10,6 +10,10 @@ use App\Models\Course\Section\Lesson\LessonStatus;
 class Lesson extends Model
 {
 
+  public function section(){
+    return $this->belongsTo(Section::class);
+  }
+
   public function status(){
     return $this->belongsTo(LessonStatus::class);
   }
@@ -17,4 +21,5 @@ class Lesson extends Model
   public function video(){
     return $this->belongsTo(Video::class);
   }
+
 }
