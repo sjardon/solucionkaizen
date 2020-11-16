@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class SectionStatusController extends Controller
 {
+
+    public function __construct()
+    {
+      $this->middleware('auth:api', ['only' => ['store','update','destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +20,10 @@ class SectionStatusController extends Controller
      */
     public function index()
     {
-        //
+
+      $sectionStatuses = SectionStatus::all();
+
+      return response(['section_statuses'=>$sectionStatuses]);
     }
 
     /**
@@ -25,7 +34,33 @@ class SectionStatusController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+      if(!$request->user()->hasAnyRole(['admin','editor'])){
+        return response('Unauthorized',401);
+      }
+
+      $validator = Validator::make($request->all(), [
+        'name' => 'required||unique:section_statuses|max:255',
+        'description' => 'required|max:255',
+        'order' => 'required|integer',
+        'default' => 'required|boolean',
+        'active' => 'required|boolean'
+        ])->validate();
+
+        $sectionStatus = SectionStatus::create([
+          'name' => $request->name,
+          'description' => $request->description,
+          'order' => $request->order,
+          'default' => $request->default,
+          'active' => $request->active
+        ]);
+
+        if(!$sectionStatus){
+          return response('Error de creación',500);
+        }
+
+        return response(["section_status"=>$sectionStatus]);
+
     }
 
     /**
@@ -36,7 +71,7 @@ class SectionStatusController extends Controller
      */
     public function show(SectionStatus $sectionStatus)
     {
-        //
+      return response(["section_status"=>$sectionStatus]);
     }
 
     /**
@@ -48,7 +83,38 @@ class SectionStatusController extends Controller
      */
     public function update(Request $request, SectionStatus $sectionStatus)
     {
-        //
+
+      if(!$request->user()->hasAnyRole(['admin','editor','docente'])){
+        return response('Unauthorized',401);
+      }
+
+      $validator = Validator::make($request->all(), [
+        'name' => [
+          'required',
+          'max:255',
+          Rule::unique('section_statuses')->ignore($sectionStatus)
+        ],
+        'description' => 'required|max:255',
+        'order' => 'required|integer',
+        'default' => 'required|boolean',
+        'active' => 'required|boolean'
+        ])->validate();
+
+        $sectionStatus = new SectionStatus([
+          'name' => $request->name,
+          'description' => $request->description,
+          'order' => $request->order,
+          'default' => $request->default,
+          'active' => $request->active
+        ]);
+
+        $sectionStatus->save();
+
+        if(!$sectionStatus){
+          return response('Error de creación',500);
+        }
+
+        return response(["section_status"=>$sectionStatus]);
     }
 
     /**
@@ -59,6 +125,14 @@ class SectionStatusController extends Controller
      */
     public function destroy(SectionStatus $sectionStatus)
     {
-        //
+
+      if(!$request->user()->hasAnyRole(['admin','editor'])){
+        return response('Unauthorized',401);
+      }
+
+      $sectionStatus->delete();
+
+      return request("ok");
+
     }
 }
