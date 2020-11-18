@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use App\Models\Course;
+use App\Models\Person\Student;
 use App\Models\CourseStudent\CourseStudentStatus;
 use App\Models\CourseStudent\SectionStudent;
 
@@ -12,6 +14,16 @@ use App\Models\CourseStudent\SectionStudent;
 
 class CourseStudent extends Pivot
 {
+
+  public function course()
+  {
+    return $this->belongsTo(Course::class);
+  }
+
+  public function student()
+  {
+    return $this->belongsTo(Student::class);
+  }
 
   public function status()
   {

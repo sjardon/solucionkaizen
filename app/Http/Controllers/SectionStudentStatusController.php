@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class SectionStudentStatusController extends Controller
 {
+
+
+
+    public function __construct()
+    {
+      $this->middleware('auth:api', ['only' => ['store','update','destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +22,10 @@ class SectionStudentStatusController extends Controller
      */
     public function index()
     {
-        //
+
+      $sectionStudentStatuses = SectionStudentStatus::all();
+
+      return response(['section_student_statuses'=>$sectionStudentStatuses]);
     }
 
     /**
@@ -25,7 +36,33 @@ class SectionStudentStatusController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+          if(!$request->user()->hasAnyRole(['admin','editor'])){
+            return response('Unauthorized',401);
+          }
+
+          $validator = Validator::make($request->all(), [
+            'name' => 'required||unique:section_student_statuses|max:255',
+            'description' => 'required|max:255',
+            'order' => 'required|integer',
+            'default' => 'required|boolean',
+            'active' => 'required|boolean'
+            ])->validate();
+
+            $sectionStudentStatus = SectionStudentStatus::create([
+              'name' => $request->name,
+              'description' => $request->description,
+              'order' => $request->order,
+              'default' => $request->default,
+              'active' => $request->active
+            ]);
+
+            if(!$sectionStudentStatus){
+              return response('Error de creación',500);
+            }
+
+            return response(["section_student_status"=>$sectionStudentStatus]);
+
     }
 
     /**
@@ -36,7 +73,8 @@ class SectionStudentStatusController extends Controller
      */
     public function show(SectionStudentStatus $sectionStudentStatus)
     {
-        //
+
+        return response(["section_student_status"=>$sectionStudentStatus]);
     }
 
     /**
@@ -48,7 +86,38 @@ class SectionStudentStatusController extends Controller
      */
     public function update(Request $request, SectionStudentStatus $sectionStudentStatus)
     {
-        //
+
+      if(!$request->user()->hasAnyRole(['admin','editor','docente'])){
+        return response('Unauthorized',401);
+      }
+
+      $validator = Validator::make($request->all(), [
+        'name' => [
+          'required',
+          'max:255',
+          Rule::unique('section_student_statuses')->ignore($sectionStudentStatus)
+        ],
+        'description' => 'required|max:255',
+        'order' => 'required|integer',
+        'default' => 'required|boolean',
+        'active' => 'required|boolean'
+        ])->validate();
+
+        $sectionStudentStatus = new SectionStudentStatus([
+          'name' => $request->name,
+          'description' => $request->description,
+          'order' => $request->order,
+          'default' => $request->default,
+          'active' => $request->active
+        ]);
+
+        $sectionStudentStatus->save();
+
+        if(!$sectionStudentStatus){
+          return response('Error de creación',500);
+        }
+
+        return response(["section_student_status"=>$sectionStudentStatus]);
     }
 
     /**
@@ -59,6 +128,14 @@ class SectionStudentStatusController extends Controller
      */
     public function destroy(SectionStudentStatus $sectionStudentStatus)
     {
-        //
+
+      if(!$request->user()->hasAnyRole(['admin','editor'])){
+        return response('Unauthorized',401);
+      }
+
+      $sectionStudentStatus->delete();
+
+      return request("ok");
+
     }
 }

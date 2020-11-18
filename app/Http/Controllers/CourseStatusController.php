@@ -9,74 +9,81 @@ use Illuminate\Support\Facades\Validator;
 
 class CourseStatusController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
 
-      $courseStatuses = CourseStatus::all();
 
-      return response(['course_statuses'=>$courseStatuses]);
+  public function __construct()
+  {
+    $this->middleware('auth:api', ['only' => ['store','update','destroy']]);
+  }
+
+  /**
+  * Display a listing of the resource.
+  *
+  * @return \Illuminate\Http\Response
+  */
+  public function index()
+  {
+
+    $courseStatuses = CourseStatus::all();
+
+    return response(['course_statuses'=>$courseStatuses]);
+  }
+
+  /**
+  * Store a newly created resource in storage.
+  *
+  * @param  \Illuminate\Http\Request  $request
+  * @return \Illuminate\Http\Response
+  */
+  public function store(Request $request)
+  {
+
+    if(!$request->user()->hasAnyRole(['admin','editor'])){
+      return response('Unauthorized',401);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
+    $validator = Validator::make($request->all(), [
+      'name' => 'required||unique:course_statuses|max:255',
+      'description' => 'required|max:255',
+      'order' => 'required|integer',
+      'default' => 'required|boolean',
+      'active' => 'required|boolean'
+      ])->validate();
 
-      if(!$request->user()->hasAnyRole(['admin','editor'])){
-        return response('Unauthorized',401);
+      $courseStatus = CourseStatus::create([
+        'name' => $request->name,
+        'description' => $request->description,
+        'order' => $request->order,
+        'default' => $request->default,
+        'active' => $request->active
+      ]);
+
+      if(!$courseStatus){
+        return response('Error de creación',500);
       }
 
-      $validator = Validator::make($request->all(), [
-        'name' => 'required||unique:course_statuses|max:255',
-        'description' => 'required|max:255',
-        'order' => 'required|integer',
-        'default' => 'required|boolean',
-        'active' => 'required|boolean'
-        ])->validate();
-
-        $courseStatus = CourseStatus::create([
-          'name' => $request->name,
-          'description' => $request->description,
-          'order' => $request->order,
-          'default' => $request->default,
-          'active' => $request->active
-        ]);
-
-        if(!$courseStatus){
-          return response('Error de creación',500);
-        }
-
-        return response(["course_status"=>$courseStatus]);
+      return response(["course_status"=>$courseStatus]);
 
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Course\CourseStatus  $courseStatus
-     * @return \Illuminate\Http\Response
-     */
+    * Display the specified resource.
+    *
+    * @param  \App\Models\Course\CourseStatus  $courseStatus
+    * @return \Illuminate\Http\Response
+    */
     public function show(CourseStatus $courseStatus)
     {
       return response(["course_status"=>$courseStatus]);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Course\CourseStatus  $courseStatus
-     * @return \Illuminate\Http\Response
-     */
+    * Update the specified resource in storage.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @param  \App\Models\Course\CourseStatus  $courseStatus
+    * @return \Illuminate\Http\Response
+    */
     public function update(Request $request, CourseStatus $courseStatus)
     {
 
@@ -111,16 +118,16 @@ class CourseStatusController extends Controller
         }
 
         return response(["course_status"=>$courseStatus]);
-    }
+      }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Course\CourseStatus  $courseStatus
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CourseStatus $courseStatus)
-    {
+      /**
+      * Remove the specified resource from storage.
+      *
+      * @param  \App\Models\Course\CourseStatus  $courseStatus
+      * @return \Illuminate\Http\Response
+      */
+      public function destroy(CourseStatus $courseStatus)
+      {
 
         if(!$request->user()->hasAnyRole(['admin','editor'])){
           return response('Unauthorized',401);
@@ -130,5 +137,5 @@ class CourseStatusController extends Controller
 
         return request("ok");
 
+      }
     }
-}
