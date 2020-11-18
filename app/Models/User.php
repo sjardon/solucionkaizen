@@ -80,8 +80,6 @@ class User extends Authenticatable
       return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
-
-
     public function authorizeRoles($roles)
     {
       abort_unless($this->hasAnyRole($roles), 401);
